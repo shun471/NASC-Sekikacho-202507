@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>導通状態テスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .dead {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #ef5350;
+        }
+        .live {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 2px solid #66bb6a;
+        }
+        .button {
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .dead-btn {
+            background: #f44336;
+            color: white;
+        }
+        .live-btn {
+            background: #4caf50;
+            color: white;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 導通状態テスト</h1>
+        
+        <div class="info">
+            <strong>使用方法:</strong><br>
+            1. バックエンドサーバーが起動していることを確認<br>
+            2. <code>USE_MOCK_GPIO=true</code> が設定されていることを確認<br>
+            3. 下のボタンで導通状態を手動切り替え
+        </div>
+
+        <div id="status" class="status dead">
+            🔴 導通なし (DEAD)
+        </div>
+
+        <div style="text-align: center;">
+            <button class="button dead-btn" onclick="setCircuit(false)">
+                🔴 導通なしに設定
+            </button>
+            <button class="button live-btn" onclick="setCircuit(true)">
+                🟢 導通ありに設定
+            </button>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="button" onclick="checkStatus()" style="background: #2196f3; color: white;">
+                🔄 状態確認
+            </button>
+        </div>
+
+        <div id="log" style="margin-top: 20px; padding: 10px; background: #f5f5f5; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto;">
+            <div>ログがここに表示されます...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function setCircuit(live) {
+            try {
+                log(`導通状態を ${live ? 'LIVE' : 'DEAD'} に設定中...`);
+                
+                const response = await fetch(`${API_BASE}/api/dev/circuit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ live })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ ${data.message}`);
+                    updateStatus(live);
+                } else {
+                    log(`❌ エラー: ${data.error}`);
+                }
+            } catch (error) {
+                log(`❌ 通信エラー: ${error.message}`);
+            }
+        }
+
+        async function checkStatus() {
+            try {
+                log('現在の状態を確認中...');
+                
+                const response = await fetch(`${API_BASE}/api/dev/circuit`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`📊 現在の状態: ${data.circuitLive ? 'LIVE' : 'DEAD'}`);
+                    updateStatus(data.circuitLive);
+                } else {
+                    log(`❌ エラー: ${data.error}`);
+                }
+            } catch (error) {
+                log(`❌ 通信エラー: ${error.message}`);
+            }
+        }
+
+        function updateStatus(live) {
+            const statusDiv = document.getElementById('status');
+            if (live) {
+                statusDiv.className = 'status live';
+                statusDiv.innerHTML = '🟢 導通あり (LIVE)';
+            } else {
+                statusDiv.className = 'status dead';
+                statusDiv.innerHTML = '🔴 導通なし (DEAD)';
+            }
+        }
+
+        // ページ読み込み時に状態確認
+        window.onload = function() {
+            log('ページ読み込み完了');
+            checkStatus();
+        };
+    </script>
+</body>
+</html> 
