@@ -4,7 +4,7 @@ import http from 'http';
 import { WebSocketServer } from 'ws';
 import dotenv from 'dotenv';
 import { Timer } from './timer';
-import { getGPIO } from './gpio-pigpio'; // pigpio版を使用
+import { getGPIO } from './gpio-pigpio-alt'; // pigpio版を使用
 import { logger } from './logger';
 import path from 'path';
 import fs from 'fs';
