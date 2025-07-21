@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import { Timer } from './timer';
 import { getGPIO } from './gpio';
 import { logger } from './logger';
+import path from 'path';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -20,6 +22,16 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 app.use(express.json());
+
+// 静的ファイル配信の設定
+app.use(express.static(path.join(__dirname, '../public')));
+
+// ルートパスでindex.htmlを配信
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+
 
 // グローバルなタイマーとGPIO管理
 let globalTimer: Timer | null = null;
@@ -252,6 +264,11 @@ app.get('/api/dev/circuit', (req: any, res: any) => {
     circuitLive: isCircuitLive,
     isMockMode: true
   });
+});
+
+// 導通の手動チェンジページへのルート
+app.get('/sample', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/dev-test.html'));
 });
 
 // WebSocket: タイマーと導通検知のプッシュ
