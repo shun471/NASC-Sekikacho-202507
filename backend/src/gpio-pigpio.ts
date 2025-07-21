@@ -53,13 +53,17 @@ class RealGpio implements IGpio {
     
     try {
       // 正しいインポート方法
-      const pigpioClient = require('pigpio-client');
-      this.client = pigpioClient({host: 'localhost', port: 8888});
+      const { pigpio } = require('pigpio-client');
+      this.client = pigpio({host: 'localhost', port: 8888});
       await this.client.connect();
       
       this.sensor = await this.client.gpio(this.pinNumber);
-      await this.sensor.mode('input');
-      await this.sensor.pullUpDown('down');
+      
+      // 入力モードに設定
+      await this.sensor.modeSet('input');
+      
+      // プルダウン抵抗を有効化 (0=off, 1=up, 2=down)
+      await this.sensor.pullUpDown(2);
       
       this.isInitialized = true;
       console.log(`[GPIO] Initialized GPIO${this.pinNumber} using pigpio-client`);
@@ -75,7 +79,7 @@ class RealGpio implements IGpio {
         await this.initialize();
       }
       
-      const value = await this.sensor.digitalRead();
+      const value = await this.sensor.read();
       const isLive = value === 1;
       
       console.log(`[GPIO] GPIO${this.pinNumber} read: ${value} (${isLive ? 'LIVE' : 'DEAD'})`);
