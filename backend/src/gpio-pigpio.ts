@@ -52,8 +52,9 @@ class RealGpio implements IGpio {
     if (this.isInitialized) return;
     
     try {
-      const { GpioClient } = require('pigpio-client');
-      this.client = new GpioClient({host: 'localhost', port: 8888});
+      // 正しいインポート方法
+      const pigpio = require('pigpio-client');
+      this.client = new pigpio({host: 'localhost', port: 8888});
       await this.client.connect();
       
       this.sensor = await this.client.gpio(this.pinNumber);
