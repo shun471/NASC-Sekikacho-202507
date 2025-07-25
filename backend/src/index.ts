@@ -44,7 +44,7 @@ function startGame() {
   
   isGameActive = true;
   isCircuitLive = false; // ゲーム開始時は導通していない
-  globalTimer = new Timer(60*90); // 3分タイマー
+  globalTimer = new Timer(60*120); // 3分タイマー
   globalGpio = getGPIO();
 
   // 全クライアントにタイマー開始を通知
