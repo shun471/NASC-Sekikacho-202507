@@ -7,7 +7,7 @@ import { createSocket } from '../lib/socket';
 
 export default function Home() {
   const [remaining, setRemaining] = useState<number | null>(null);
-  const [isGameActive, setIsGameActive] = useState(false);
+  //const [isGameActive, setIsGameActive] = useState(false);
   const [isCircuitLive, setIsCircuitLive] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -28,7 +28,7 @@ export default function Home() {
       
       if (data.event === 'game_state') {
         setRemaining(data.remaining);
-        setIsGameActive(data.isActive);
+        //setIsGameActive(data.isActive);
         setIsCircuitLive(data.isCircuitLive);
       }
       
@@ -38,7 +38,7 @@ export default function Home() {
       }
       
       if (data.event === 'game_started') {
-        setIsGameActive(true);
+        //setIsGameActive(true);
         setIsCircuitLive(false);
         setIsUnlocked(false); // ゲーム開始時は解除状態をリセット
         setIsGameOver(false); // ゲームオーバー状態もリセット
@@ -58,7 +58,7 @@ export default function Home() {
       if (data.event === 'timeout') {
         console.log('タイマーが終了しました');
         setRemaining(0);
-        setIsGameActive(false);
+        //setIsGameActive(false);
         setIsCircuitLive(false);
         setIsUnlocked(false);
         setIsGameOver(true);
@@ -89,11 +89,11 @@ export default function Home() {
     };
   }, [isUnlocked]); // isUnlockedを依存配列に追加
 
-  const stopGame = () => {
-    if (wsRef.current) {
-      wsRef.current.send(JSON.stringify({ cmd: 'stop' }));
-    }
-  };
+  // const stopGame = () => {
+  //   if (wsRef.current) {
+  //     wsRef.current.send(JSON.stringify({ cmd: 'stop' }));
+  //   }
+  // };
 
   // GAME OVER画面
   if (isGameOver) {
@@ -143,7 +143,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* 左側: カウントダウンとメッセージ */}
             <div className="space-y-6">
-              {/* ゲーム停止ボタン */}
+              {/* ゲーム停止ボタン
               {isGameActive && (
                 <div className="text-center">
                   <button 
@@ -153,7 +153,7 @@ export default function Home() {
                     ⏹️ システム停止 ⏹️
                   </button>
                 </div>
-              )}
+              )} */}
 
               {/* タイマー表示 */}
               {remaining !== null && (
