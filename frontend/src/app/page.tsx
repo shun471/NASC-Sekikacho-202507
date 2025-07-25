@@ -135,11 +135,8 @@ export default function Home() {
           {/* タイトル */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-red-500 mb-2 drop-shadow-lg">
-              🎮 爆弾コントロールパネル 🎮
+              💣爆弾コントロールパネル💣
             </h1>
-            <p className="text-gray-300 text-lg">
-              システムが自動で開始されました。時間内に正しいコードを入力してください！
-            </p>
           </div>
 
           {/* メインコンテンツ - 左右分割レイアウト */}
